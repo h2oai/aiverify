@@ -1,0 +1,15 @@
+{{- if .Values.apigw.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: apigw
+  namespace: {{ include "common.names.namespace" . | quote }}
+spec:
+  selector:
+    app: aiverify-apigw
+  ports:
+    - protocol: TCP
+      port: {{ .Values.apigw.service.port }}
+      targetPort: 4000
+  type: {{ .Values.apigw.service.type }}
+{{- end }}

@@ -1,0 +1,15 @@
+{{- if .Values.portal.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: portal
+  namespace: {{ include "common.names.namespace" . | quote }}
+spec:
+  selector:
+    app: aiverify-portal
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+  type: {{ .Values.portal.service.type }}
+{{- end }}

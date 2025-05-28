@@ -1,0 +1,46 @@
+{{- if .Values.portal.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aiverify-portal
+  namespace: {{ include "common.names.namespace" . | quote }}
+spec:
+  replicas: {{ .Values.portal.replicaCount }}
+  selector:
+    matchLabels:
+      app: aiverify-portal
+  template:
+    metadata:
+      labels:
+        app: aiverify-portal
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{ toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: portal
+          image: "{{ .Values.portal.image.repository }}:{{ .Values.portal.image.tag }}"
+          imagePullPolicy: {{ .Values.portal.image.pullPolicy }}
+          ports:
+            - containerPort: 3000
+          env:
+            - name: APIGW_HOST
+              value: "http://apigw.{{ include "common.names.namespace" . }}.svc.cluster.local:4000"
+          {{- if .Values.portal.resources }}
+          resources:
+            {{- toYaml .Values.portal.resources | nindent 12 }}
+          {{- end }}
+      {{- if .Values.portal.nodeSelector }}
+      nodeSelector:
+        {{- toYaml .Values.portal.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if .Values.portal.tolerations }}
+      tolerations:
+        {{- toYaml .Values.portal.tolerations | nindent 8 }}
+      {{- end }}
+      {{- if .Values.portal.affinity }}
+      affinity:
+        {{- toYaml .Values.portal.affinity | nindent 8 }}
+      {{- end }}
+{{- end }}

@@ -1,0 +1,26 @@
+{{- if .Values.portal.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: aiverify-portal
+  namespace: {{ include "common.names.namespace" . | quote }}
+  labels:
+    app.kubernetes.io/instance: aiverify
+spec:
+  ingressClassName: {{ .Values.portal.ingress.ingressClassName }}
+  {{- if .Values.portal.ingress.tls  }}
+  tls:
+    {{- toYaml .Values.portal.ingress.tls | nindent 8 }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.portal.ingress.host | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: portal
+                port:
+                  number: 3000
+{{- end }}

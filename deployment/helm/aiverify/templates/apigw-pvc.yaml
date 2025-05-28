@@ -1,0 +1,16 @@
+{{- if and .Values.apigw.enabled .Values.apigw.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: aiverify-apigw-pvc
+  namespace: {{ include "common.names.namespace" . | quote }}
+spec:
+  accessModes:
+    {{- toYaml .Values.apigw.persistence.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.apigw.persistence.size }}
+  {{- if .Values.apigw.persistence.storageClass }}
+  storageClassName: {{ .Values.apigw.persistence.storageClass }}
+  {{- end }}
+{{- end }}

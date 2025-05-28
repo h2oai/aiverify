@@ -1,0 +1,15 @@
+{{- if .Values.valkey.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: valkey
+  namespace: {{ include "common.names.namespace" . | quote }}
+spec:
+  selector:
+    app: aiverify-valkey
+  ports:
+    - protocol: TCP
+      port: {{ .Values.valkey.service.port }}
+      targetPort: 6379
+  type: {{ .Values.valkey.service.type }}
+{{- end }}

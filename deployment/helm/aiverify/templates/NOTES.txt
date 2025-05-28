@@ -1,0 +1,7 @@
+CHART NAME: {{ .Chart.Name }}
+CHART VERSION: {{ .Chart.Version }}
+APP VERSION: {{ .Chart.AppVersion }}
+
+{{- if .Values.portal.ingress.enabled }}
+Visit ({{ .Values.portal.ingress.hostname }}) to access the AI Verify portal.
+{{- end }}

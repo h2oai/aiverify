@@ -1,0 +1,80 @@
+global:
+  imagePullSecrets: []
+
+clusterDomain: cluster.local
+
+apigw:
+  enabled: true
+  image:
+    repository: ghcr.io/aiverify-foundation/aiverify-apigw
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 4000
+  persistence:
+    enabled: true
+    storageClass: "" # Set to "" to use the default storage class
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+portal:
+  enabled: true
+  image:
+    repository: ghcr.io/aiverify-foundation/aiverify-portal
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: false
+    ingressClassName: openshift-default
+    annotations: { }
+    host: aiverify.apps.uob2.apac-gcp.h2o.dev
+    tls:
+      - hosts:
+          - aiverify.apps.uob2.apac-gcp.h2o.dev
+        secretName: h2oai-tls-secret
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+testEngineWorker:
+  enabled: true
+  image:
+    repository: ghcr.io/aiverify-foundation/aiverify-test-engine-worker
+    tag: latest-venv
+    pullPolicy: IfNotPresent
+  replicaCount: 3
+  service:
+    type: ClusterIP
+    port: 80
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+valkey:
+  enabled: true
+  image:
+    repository: valkey/valkey
+    tag: "8"
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 6379
+  persistence:
+    enabled: false
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}

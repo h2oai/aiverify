@@ -1,0 +1,58 @@
+{{- if .Values.testEngineWorker.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aiverify-test-engine-worker
+  namespace: {{ include "common.names.namespace" . | quote }}
+spec:
+  replicas: {{ .Values.testEngineWorker.replicaCount }}
+  selector:
+    matchLabels:
+      app: aiverify-test-engine-worker
+  template:
+    metadata:
+      labels:
+        app: aiverify-test-engine-worker
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: data-volume
+          emptyDir: {}
+      containers:
+        - name: test-engine-worker
+          image: "{{ .Values.testEngineWorker.image.repository }}:{{ .Values.testEngineWorker.image.tag }}"
+          imagePullPolicy: {{ .Values.testEngineWorker.image.pullPolicy }}
+          env:
+            - name: APIGW_URL
+              value: "http://apigw.{{ .Values.global.namespace }}.svc.cluster.local:4000"
+            - name: VALKEY_HOST_ADDRESS
+              value: "valkey.{{ .Values.global.namespace }}.svc.cluster.local"
+            - name: VALKEY_PORT
+              value: "6379"
+            - name: PIPELINE_BUILD
+              value: "virtual_env"
+            - name: PIPELINE_EXECUTE
+              value: "virtual_env_execute"
+          volumeMounts:
+            - name: data-volume
+              mountPath: /app/aiverify-test-engine-worker/data
+          {{- if .Values.testEngineWorker.resources }}
+          resources:
+            {{- toYaml .Values.testEngineWorker.resources | nindent 12 }}
+          {{- end }}
+      {{- if .Values.testEngineWorker.nodeSelector }}
+      nodeSelector:
+        {{- toYaml .Values.testEngineWorker.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if .Values.testEngineWorker.tolerations }}
+      tolerations:
+        {{- toYaml .Values.testEngineWorker.tolerations | nindent 8 }}
+      {{- end }}
+      {{- if .Values.testEngineWorker.affinity }}
+      affinity:
+        {{- toYaml .Values.testEngineWorker.affinity | nindent 8 }}
+      {{- end }}
+{{- end }}

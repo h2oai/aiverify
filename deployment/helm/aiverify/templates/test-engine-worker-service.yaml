@@ -1,0 +1,15 @@
+{{- if .Values.testEngineWorker.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-engine-worker
+  namespace: {{ include "common.names.namespace" . | quote }}
+spec:
+  selector:
+    app: aiverify-test-engine-worker
+  ports:
+    - protocol: TCP
+      port: {{ .Values.testEngineWorker.service.port }}
+      targetPort: 80
+  type: {{ .Values.testEngineWorker.service.type }}
+{{- end }}

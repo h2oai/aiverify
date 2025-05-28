@@ -1,0 +1,59 @@
+{{- if .Values.apigw.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aiverify-apigw
+  namespace: {{ include "common.names.namespace" . | quote }}
+spec:
+  replicas: {{ .Values.apigw.replicaCount }}
+  selector:
+    matchLabels:
+      app: aiverify-apigw
+  template:
+    metadata:
+      labels:
+        app: aiverify-apigw
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: apigw
+          image: "{{ .Values.apigw.image.repository }}:{{ .Values.apigw.image.tag }}"
+          imagePullPolicy: {{ .Values.apigw.image.pullPolicy }}
+          ports:
+            - containerPort: 4000
+          env:
+            - name: APIGW_DATA_DIR
+              value: "/data"
+            - name: APIGW_PORT
+              value: "4000"
+            - name: APIGW_HOST_ADDRESS
+              value: "0.0.0.0"
+            - name: VALKEY_HOST_ADDRESS
+              value: "valkey.{{ include "common.names.namespace" . }}.svc.{{ .Values.clusterDomain }}"
+          volumeMounts:
+            - mountPath: /data
+              name: apigw-data
+          {{- if .Values.apigw.resources }}
+          resources:
+            {{- toYaml .Values.apigw.resources | nindent 12 }}
+          {{- end }}
+      volumes:
+        - name: apigw-data
+          persistentVolumeClaim:
+            claimName: aiverify-apigw-pvc
+      {{- if .Values.apigw.nodeSelector }}
+      nodeSelector:
+        {{- toYaml .Values.apigw.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if .Values.apigw.tolerations }}
+      tolerations:
+        {{- toYaml .Values.apigw.tolerations | nindent 8 }}
+      {{- end }}
+      {{- if .Values.apigw.affinity }}
+      affinity:
+        {{- toYaml .Values.apigw.affinity | nindent 8 }}
+      {{- end }}
+{{- end }}

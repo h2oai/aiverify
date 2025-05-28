@@ -1,0 +1,16 @@
+annotations:
+  licenses: Apache-2.0
+apiVersion: v2
+appVersion: 2.0.0
+description: Validate and govern AI systems
+home: https://aiverifyfoundation.sg/
+keywords:
+  - aiverify
+  - trustworthy-ai
+maintainers:
+  - name: AI Verify Foundation
+    url: https://aiverifyfoundation.sg/
+name: aiverify
+sources:
+  - https://github.com/aiverify-foundation/aiverify
+version: 0.1.0
