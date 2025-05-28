@@ -35,12 +35,12 @@ portal:
     type: ClusterIP
   ingress:
     enabled: false
-    ingressClassName: openshift-default
+    ingressClassName: nginx
     annotations: { }
-    host: aiverify.apps.uob2.apac-gcp.h2o.dev
+    host: aiverify.example.com
     tls:
       - hosts:
-          - aiverify.apps.uob2.apac-gcp.h2o.dev
+          - aiverify.example.com
         secretName: h2oai-tls-secret
   resources: {}
   nodeSelector: {}
